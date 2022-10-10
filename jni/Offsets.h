@@ -180,80 +180,87 @@ namespace Offsets {
     }
 
     void initOffsets_64() {
+        // 类中成员的偏移
+
         //Global
-        PointerSize = 0x8;
+        PointerSize = 0x8;  //  64位下指针类型所占内存大小
         FUObjectItemPadd = 0x0;
         FUObjectItemSize = 0x18;
 
         //---------SDK-----------
         //Class: FNameEntry
-        FNameEntryToNameString = 0x10;
+        FNameEntryToNameString = 0x10;  // TODO
         //Class: FUObjectArray
-        FUObjectArrayToTUObjectArray = 0x10;
+        // FUObjectArray 定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\UObjectArray.h
+        FUObjectArrayToTUObjectArray = 0x10;    // TUObjectArray ObjObjects;   4+4+4+1+padding(3) = 0x10
         //Class: TUObjectArray
-        TUObjectArrayToNumElements = 0xC;
-        //Class: UObject
-        UObjectToInternalIndex = 0xC;
-        UObjectToClassPrivate = 0x10;
-        UObjectToFNameIndex = 0x18;
-        UObjectToOuterPrivate = 0x20;
+        TUObjectArrayToNumElements = 0xC;   // TODO
+        //Class: UObject    sizeof(UObject) == 0x28(vtavle + data)
+        // UObject定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\Object.h
+        // vtable + offset(objectFlags) = 0xc
+        UObjectToInternalIndex = 0xC;   // int32		InternalIndex;  0xc sizeof(int32) = 0x4     一致
+        UObjectToClassPrivate = 0x10;   // UClass*		ClassPrivate;   0xc+4 = 0x10    sizeof(UClass*) = 0x8   一致
+        UObjectToFNameIndex = 0x18;     // FName		NamePrivate;    0x10+0x8 = 0x18     sizeof(FName) = 0x8     FName.ComparisonIndex.Value     一致
+        UObjectToOuterPrivate = 0x20;   // UObject*		OuterPrivate;   0x18+0x8 = 0x20     sizeof(UObject*) = 0x8  一致
         //Class: UField
-        UFieldToNext = 0x28;
+        // UField定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\Class.h
+        UFieldToNext = 0x28;            // UField* Next;     
         //Class: UStruct
-        UStructToSuperStruct = 0x30;
-        UStructToChildren = 0x38;
+        UStructToSuperStruct = 0x40;    // UStruct* SuperStruct;    该偏移可能有问题   4.26.2 修正为 0x40
+        UStructToChildren = 0x48;       // UField* Children;   4.26.2 修正为 0x48
         //Class: UFunction
-        UFunctionToFunctionFlags = 0x88;
-        UFunctionToFunc = 0xB0;
+        UFunctionToFunctionFlags = 0x88;    //  EFunctionFlags FunctionFlags;
+        UFunctionToFunc = 0xB0;             //  FNativeFuncPtr Func;
         //Class: UProperty
-        UPropertyToElementSize = 0x34;
-        UPropertyToPropertyFlags = 0x38;
-        UPropertyToOffsetInternal = 0x44;
+        UPropertyToElementSize = 0x34;      //  int32			ElementSize;
+        UPropertyToPropertyFlags = 0x38;    //  EPropertyFlags	PropertyFlags;
+        UPropertyToOffsetInternal = 0x44;   //  int32		Offset_Internal;
         //Class: UBoolProperty
-        UBoolPropertyToFieldSize = 0x70;
-        UBoolPropertyToByteOffset = 0x71;
-        UBoolPropertyToByteMask = 0x72;
-        UBoolPropertyToFieldMask = 0x73;
+        UBoolPropertyToFieldSize = 0x70;    //  uint8 FieldSize;
+        UBoolPropertyToByteOffset = 0x71;   //  uint8 ByteOffset;
+        UBoolPropertyToByteMask = 0x72;     //  uint8 ByteMask;
+        UBoolPropertyToFieldMask = 0x73;    //  uint8 FieldMask;
+
         //Class: UObjectProperty
-        UObjectPropertyToPropertyClass = 0x70;
+        UObjectPropertyToPropertyClass = 0x78;  //  class UClass* PropertyClass;
         //Class: UClassProperty
-        UClassPropertyToMetaClass = 0x78;
+        UClassPropertyToMetaClass = 0x78;   //  class UClass* MetaClass;
         //Class: UInterfaceProperty
-        UInterfacePropertyToInterfaceClass = 0x78;
+        UInterfacePropertyToInterfaceClass = 0x78;  //  class	UClass*		InterfaceClass;
         //Class: UArrayProperty
-        UArrayPropertyToInnerProperty = 0x70;
+        UArrayPropertyToInnerProperty = 0x78;   //  UProperty* Inner;
         //Class: UMapProperty
-        UMapPropertyToKeyProp = 0x70;
-        UMapPropertyToValueProp = 0x78;
+        UMapPropertyToKeyProp = 0x78;       //  UProperty*       KeyProp;
+        UMapPropertyToValueProp = 0x80;     //  UProperty*       ValueProp;
         //Class: USetProperty
-        USetPropertyToElementProp = 0x70;
+        USetPropertyToElementProp = 0x78;   //  UProperty*       ElementProp;
         //Class: UStructProperty
-        UStructPropertyToStruct = 0x70;
+        UStructPropertyToStruct = 0x78;     //  class UScriptStruct* Struct;
         //Class: UWorld
-        UWorldToPersistentLevel = 0x30;
+        UWorldToPersistentLevel = 0x30;     //  class ULevel*	PersistentLevel;    一致
         //Class: ULevel
-        ULevelToAActors = 0x98;
+        ULevelToAActors = 0x98;             //  TArray<AActor*> Actors;
         ULevelToAActorsCount = 0xA0;
     }
 
     void patchUE423_64() {
         //Class: FNamePool
-        FNameStride = 0x2;
-        GNamesToFNamePool = 0x30;
-        FNamePoolToCurrentBlock = 0x8;
-        FNamePoolToCurrentByteCursor = 0xC;
-        FNamePoolToBlocks = 0x10;
+        FNameStride = 0x2;                  //  alignof(FNameEntry)     一致
+        GNamesToFNamePool = 0x30;           //  padding 
+        FNamePoolToCurrentBlock = 0x8;      //  uint32 CurrentBlock = 0;    一致
+        FNamePoolToCurrentByteCursor = 0xC; //  uint32 CurrentByteCursor = 0;   一致
+        FNamePoolToBlocks = 0x10;           //  uint8* Blocks[FNameMaxBlocks] = {};     一致
         //Class: FNameEntry
-        FNameEntryToLenBit = 6;
-        FNameEntryToString = 0x2;
+        FNameEntryToLenBit = 6;             //  uint16 Len : 10;    一致
+        FNameEntryToString = 0x2;           //  一致
         //Class: TUObjectArray
-        TUObjectArrayToNumElements = 0x14;
+        TUObjectArrayToNumElements = 0x14;  //  一致
         //Class: UStruct
-        UStructToChildProperties = 0x44;
-        //Class: FField
-        FFieldToClass = 0x8;
-        FFieldToNext = 0x20;
-        FFieldToName = 0x28;
+        UStructToChildProperties = 0x50;    //  4.23.0中没有该字段, 4.26.2中出现   4.26.2修正为0x50
+        //Class: FField         //  4.23.0中没有 FField class
+        FFieldToClass = 0x8;    // FFieldClass* ClassPrivate; 
+        FFieldToNext = 0x20;    // FField* Next; 
+        FFieldToName = 0x28;    // FName NamePrivate;
     }
 
     void patchCustom_64() {
@@ -274,7 +281,7 @@ namespace Offsets {
         }
         if (isGameOfPeace()) {
             //Class: FNameEntry
-            FNameEntryToNameString = 0xC;
+            FNameEntryToNameString = 0xE;
             //Class: FUObjectArray
             FUObjectArrayToTUObjectArray = 0xB0;
             //Class: TUObjectArray
