@@ -204,38 +204,44 @@ namespace Offsets {
         UObjectToOuterPrivate = 0x20;   // UObject*		OuterPrivate;   0x18+0x8 = 0x20     sizeof(UObject*) = 0x8  一致
         //Class: UField
         // UField定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\Class.h
-        UFieldToNext = 0x28;            // UField* Next;     
+        UFieldToNext = 0x28;            // UField* Next;      一致
+
         //Class: UStruct
-        UStructToSuperStruct = 0x40;    // UStruct* SuperStruct;    该偏移可能有问题   4.26.2 修正为 0x40
-        UStructToChildren = 0x48;       // UField* Children;   4.26.2 修正为 0x48
+        UStructToSuperStruct = 0x40;    // UStruct* SuperStruct;                            // +0x10
+        UStructToChildren = 0x48;       // UField* Children;                                // +0x10
+
         //Class: UFunction
-        UFunctionToFunctionFlags = 0x88;    //  EFunctionFlags FunctionFlags;
-        UFunctionToFunc = 0xB0;             //  FNativeFuncPtr Func;
+        UFunctionToFunctionFlags = 0xB0;    //  EFunctionFlags FunctionFlags;               // +0x28
+        UFunctionToFunc = 0xd8;             //  FNativeFuncPtr Func;                        // +0x28
+
         //Class: UProperty
-        UPropertyToElementSize = 0x34;      //  int32			ElementSize;
-        UPropertyToPropertyFlags = 0x38;    //  EPropertyFlags	PropertyFlags;
-        UPropertyToOffsetInternal = 0x44;   //  int32		Offset_Internal;
+        UPropertyToElementSize = 0x3c;      //  int32			ElementSize;                // +8
+        UPropertyToPropertyFlags = 0x40;    //  EPropertyFlags	PropertyFlags;              // +8
+        UPropertyToOffsetInternal = 0x4c;   //  int32		Offset_Internal;                // +8
+
         //Class: UBoolProperty
-        UBoolPropertyToFieldSize = 0x70;    //  uint8 FieldSize;
-        UBoolPropertyToByteOffset = 0x71;   //  uint8 ByteOffset;
-        UBoolPropertyToByteMask = 0x72;     //  uint8 ByteMask;
-        UBoolPropertyToFieldMask = 0x73;    //  uint8 FieldMask;
+        UBoolPropertyToFieldSize = 0x70;    //  uint8 FieldSize;                            // origin
+        UBoolPropertyToByteOffset = 0x71;   //  uint8 ByteOffset;                           // origin
+        UBoolPropertyToByteMask = 0x72;     //  uint8 ByteMask;                             // origin
+        UBoolPropertyToFieldMask = 0x73;    //  uint8 FieldMask;                            // origin
 
         //Class: UObjectProperty
-        UObjectPropertyToPropertyClass = 0x78;  //  class UClass* PropertyClass;
+        UObjectPropertyToPropertyClass = 0x78;  //  class UClass* PropertyClass;             // +8
         //Class: UClassProperty
-        UClassPropertyToMetaClass = 0x78;   //  class UClass* MetaClass;
+        UClassPropertyToMetaClass = 0x78;   //  class UClass* MetaClass;                     // origin
         //Class: UInterfaceProperty
-        UInterfacePropertyToInterfaceClass = 0x78;  //  class	UClass*		InterfaceClass;
+        UInterfacePropertyToInterfaceClass = 0x78;  //  class	UClass*		InterfaceClass;  // origin
         //Class: UArrayProperty
-        UArrayPropertyToInnerProperty = 0x78;   //  UProperty* Inner;
+        UArrayPropertyToInnerProperty = 0x78;   //  UProperty* Inner;                        // +8
         //Class: UMapProperty
-        UMapPropertyToKeyProp = 0x78;       //  UProperty*       KeyProp;
-        UMapPropertyToValueProp = 0x80;     //  UProperty*       ValueProp;
+        UMapPropertyToKeyProp = 0x78;       //  UProperty*       KeyProp;                    // +8
+        UMapPropertyToValueProp = 0x80;     //  UProperty*       ValueProp;                  // +8
         //Class: USetProperty
-        USetPropertyToElementProp = 0x78;   //  UProperty*       ElementProp;
+        USetPropertyToElementProp = 0x78;   //  UProperty*       ElementProp;                // +8
         //Class: UStructProperty
-        UStructPropertyToStruct = 0x78;     //  class UScriptStruct* Struct;
+        UStructPropertyToStruct = 0x78;     //  class UScriptStruct* Struct;                 // +8
+
+
         //Class: UWorld
         UWorldToPersistentLevel = 0x30;     //  class ULevel*	PersistentLevel;    一致
         //Class: ULevel
