@@ -1,6 +1,8 @@
 #ifndef SDK_H
 #define SDK_H
 
+#include <unistd.h> // usleep
+
 #include "StructsSDK.h"
 #include "FNames.h"
 #include "GUObjects.h"
@@ -643,7 +645,15 @@ void DumpSDK(string out) {
 
 void TestDump(kaddr uobj);
 
+typedef int64_t (*AActor_SetActorHiddenInGame_func)(void* thiz, int hidden);
+
 void DumpSDKW(string out) {
+
+    //kaddr AActor_SetActorHiddenInGame_addr = getRealOffset(0xB7C444C);
+    //AActor_SetActorHiddenInGame_func AActor_SetActorHiddenInGame = (AActor_SetActorHiddenInGame_func)(void*)(AActor_SetActorHiddenInGame_addr);
+    //cout << "AActor_SetActorHiddenInGame_func addr: 0x" << setbase(16) << AActor_SetActorHiddenInGame_addr << setbase(10) << endl;
+    //HexDump(AActor_SetActorHiddenInGame_addr, 5);
+
     ofstream sdk(out + "/SDK.txt", ofstream::out);
     if (sdk.is_open()) {
         cout << "Dumping SDK List" << endl;
@@ -651,6 +661,11 @@ void DumpSDKW(string out) {
         kaddr gworld = getPtr(UWorld::getGWorld());
         cout << "UWorld: " << setbase(16) << gworld << setbase(10) << " | Name: "
              << UObject::getName(gworld) << endl;
+
+        cout << "GetFNameFromID 0xa1305: " << GetFNameFromID(0xa1305) << endl;
+        cout << "GetFNameFromID 0x6ff69: " << GetFNameFromID(0x6ff69) << endl;
+        cout << "GetFNameFromID 0x1a42f3: " << GetFNameFromID(0x1a42f3) << endl;
+
         if (UObject::isValid(gworld)) {
             //Iterate World
             writeStruct(sdk, UObject::getClass(gworld));
@@ -661,6 +676,81 @@ void DumpSDKW(string out) {
             for (int i = 0; i < actorsCount; i++) {
                 kaddr actor = getPtr(actorList + (i * Offsets::PointerSize));
                 if (UObject::isValid(actor)) {
+                    // string name = UObject::getName(actor);
+                    // cout << "addr: 0x" << setbase(16) << actor << setbase(10) 
+                    //      << ", actor name: " << name.c_str() 
+                    //      << endl;
+                    // if (name == "BP_Girl002a_C" || name == "BP_Girl014_C" || name == "BP_Girl001a_C" || name == "BP_Girl002_C") {
+                        /*
+                        kaddr bIsInSkillAim_addr = actor + 0x982;
+                        bool bIsInSkillAim = Read<bool>(bIsInSkillAim_addr);
+                        cout << "bIsInSkillAim: 0x" << setbase(16) << bIsInSkillAim << setbase(10) << endl;
+                        */
+
+                        /*
+                        kaddr AimOffsetInterval_addr = actor + 0x984;
+                        float AimOffsetInterval = Read<float>(AimOffsetInterval);
+                        cout << "AimOffsetInterval: 0x" << setbase(16) << AimOffsetInterval << setbase(10) << endl;
+                        */
+
+                       // cap
+                    //    HexDump(actor + 0x504, 1, 0x504);
+                    //    bool is_cap = Read<bool>(actor + 0x504);
+                    //    if (is_cap) {
+                    //     kaddr Ability_addr = getPtr(actor + 0x4d0);
+
+                    //     kaddr SupSkillID_addr = getPtr(Ability_addr + 0xc28);
+                    //     HexDump(SupSkillID_addr, 5, 0x0);
+
+                    //     kaddr PlayerWeapon_addr = getPtr(actor + 0x680);
+                    //     HexDump(PlayerWeapon_addr + 0x108c, 10, 0x108c);
+
+                    //     while (true) {
+                    //         //HexDump(PlayerWeapon_addr + 0x330, 5, 0x0);
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x330 + 0x10, 0); 
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x330 + 0x18, 0); 
+
+                    //         // Vector2D WeaponScatterRange;//[Offset: 0x108c, Size: 0x0]
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x108c, 0); 
+
+                    //         // Vector4 TmpWeaponScatterRange;//[Offset: 0x10a0, Size: 0x0]
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x10a0, 0); 
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x10a0 + 0x10, 0); 
+
+                    //         // Vector4 CurrentWeaponScatter;//[Offset: 0x10b0, Size: 0x0]
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x10b0, 0); 
+                    //         Write<uint64_t>(PlayerWeapon_addr + 0x10b0 + 0x10, 0); 
+
+                    //         //Write<float>(PlayerWeapon_addr + 0x11e8, 100.0f);  // 0x00 0x00 0xc8 0x42
+                    //         //Write<float>(PlayerWeapon_addr + 0x11ec, 43.0f);  // 0x00 0x00 0x2c 0x42
+
+                    //         usleep(100);
+                    //     }
+                        
+                        //cout << "PlayerWeapon_addr: 0x" << setbase(16) << PlayerWeapon_addr << setbase(10) << endl;
+                        //HexDump(PlayerWeapon_addr + 0x11e8, 5, 0x11e8);
+
+                        //Write<float>(PlayerWeapon_addr + 0x11ec, 100.0f);  // 0x00 0x00 0xc8 0x42
+                        //HexDump(PlayerWeapon_addr + 0x11e8, 5, 0x11e8);
+                    //    } // is_cap
+                    // } // if Girl
+
+                    //AActor_SetActorHiddenInGame((void*)actor, 1);
+
+                    /*
+                    kaddr hidden_addr = actor + 0x58;
+                    HexDump(hidden_addr, 1);
+                    uint8_t hidden = Read<uint8_t>(hidden_addr);
+                    cout << "hidden: 0x" << setbase(16) << hidden << setbase(10) <<  hidden << endl;
+                    */
+
+                    /*
+                    //hidden |= 0b00000100;
+                    hidden = 0xff;
+                    Write<uint8_t>(hidden_addr, hidden);
+                    HexDump(hidden_addr, 1);
+                    */
+
                     writeStruct(sdk, UObject::getClass(actor));
                 }
             }
